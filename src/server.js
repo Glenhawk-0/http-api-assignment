@@ -1,5 +1,5 @@
-// i used piceces of code from the week 3 examples as a baseline. 
-// ill be honest though, i like... kinda half understand how it works. 
+// i used piceces of code from the week 3 examples as a baseline.
+// ill be honest though, i like... kinda half understand how it works.
 // i apologize.
 const http = require('http');
 const htmlHandler = require('./htmlResponses.js');
@@ -25,8 +25,7 @@ const urlStruct = {
 // handle HTTP requests. In node the HTTP server will automatically
 // send this function request and pre-filled response objects
 const onRequest = (request, response) => {
-
- // parse the url using the built in URL class. Can make sure this supports http and https
+  // parse the url using the built in URL class. Can make sure this supports http and https
   const protocol = request.connection.encrypted ? 'https' : 'http';
   const parsedUrl = new URL(request.url, `${protocol}://${request.headers.host}`);
 
@@ -37,13 +36,12 @@ const onRequest = (request, response) => {
 
   // grab the 'accept' headers (comma delimited) and split them into an array
   // store them inside of the request object for use in handler functions
-  //request.acceptedTypes = request.headers.accept.split(','); // needs to be an if statement now
-if (request.headers.accept) {
-  request.acceptedTypes = request.headers.accept.split(',');
-} else {
-  request.acceptedTypes = [];
-}
-
+  // request.acceptedTypes = request.headers.accept.split(','); // needs to be an if statement now
+  if (request.headers.accept) {
+    request.acceptedTypes = request.headers.accept.split(',');
+  } else {
+    request.acceptedTypes = [];
+  }
 
   // check if the path name (the /name part of the url) matches
   // any in our url object. If so call that function. If not, default to index.
@@ -59,4 +57,4 @@ http.createServer(onRequest).listen(port, () => {
   console.log(`Listening on 127.0.0.1:${port}`);
 });
 
-/////
+/// //
