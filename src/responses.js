@@ -57,7 +57,7 @@ const createXML = (sentObj, success) =>{
 const getSuccess = (request, response) => {
   // object to send
   const objectToSend = {
-    id: 'SUCCESS',
+    id: 'Success',
     message: 'This is a successfull response',
      statusCode: 200,
   };
@@ -85,11 +85,28 @@ const getSuccess = (request, response) => {
 // bad Request
 const getBadRequest = (request, response) => {
   // object to send
-  const objectToSend = {
+  let objectToSend;
+  
+  //querystuff
+  if(request.query.valid === 'true'){
+
+    objectToSend = {
+    id: 'badRequest',
+    message: 'This request has the required parameters',
+     statusCode: 200,
+  };
+    
+
+  }else{
+
+   objectToSend = {
     id: 'badRequest',
     message: 'Missing valid query parameter set to true',
      statusCode: 400,
   };
+
+  }
+
 
   // if the client's most preferred type (first option listed)
   // is xml, then respond xml instead
@@ -111,11 +128,29 @@ const getBadRequest = (request, response) => {
 // Unauthorized
 const getUnauthorized = (request, response) => {
   // object to send
-  const objectToSend = {
+  let objectToSend ;
+
+
+    //querystuff
+  if(request.query.loggedIn === 'yes'){
+
+    objectToSend = {
+    id: 'unauthorized',
+    message: 'You are Logged in',
+     statusCode: 200,
+  };
+    
+
+  }else{
+
+   objectToSend = {
     id: 'unauthorized',
     message: 'Missing loggedIn query parameter set to yes',
-    statusCode: 401,
+     statusCode: 400,
   };
+
+  }
+  
 
   // if the client's most preferred type (first option listed)
   // is xml, then respond xml instead
