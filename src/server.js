@@ -45,6 +45,7 @@ const onRequest = (request, response) => {
 
   // check if the path name (the /name part of the url) matches
   // any in our url object. If so call that function. If not, default to index.
+  // nope we actully default to not found
   if (urlStruct[parsedUrl.pathname]) {
     urlStruct[parsedUrl.pathname](request, response);
   } else {
