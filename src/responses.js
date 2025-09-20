@@ -37,6 +37,7 @@ const createXML = (sentObj, success) =>{
     // create a valid XML string with name and age tags.
     let responseXML = '<response>';
     responseXML = `${responseXML} <message>${sentObj.message}</message>`;
+    responseXML = `${responseXML} <id>${sentObj.id}</id>`;
     responseXML = `${responseXML} </response>`;
     return (responseXML);
 
@@ -56,7 +57,7 @@ const createXML = (sentObj, success) =>{
 const getSuccess = (request, response) => {
   // object to send
   const objectToSend = {
-    //id: 'SUCCESS',
+    id: 'SUCCESS',
     message: 'This is a successfull response',
      statusCode: 200,
   };
@@ -74,7 +75,7 @@ const getSuccess = (request, response) => {
   // stringify the json object (so it doesn't use references/pointers/etc)
   // but is instead a flat string object.
   // Then write it to the response.
-  const responseJson = JSON.stringify({message: objectToSend.message});
+  const responseJson = JSON.stringify({ message: objectToSend.message, id: objectToSend.id,});
 
   // return response passing json and content type
   return respond(request, response, responseJson, 'application/json', objectToSend.statusCode);

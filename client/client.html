@@ -5,6 +5,181 @@
   <link rel="stylesheet" type="text/css" href="/style.css">
   
   <script>
+    /*Our response handling function. Read init and sendFetchRequest first.
+
+    This function is used to handle a response returned from our fetch operation in sendFetchRequest.
+    */
+    const handleResponse = (response) => {
+      /*Responses from fetch calls also have some built in asynchronous functionality.
+        One of those functionalities is the ability to convert the response into plain text.
+        Here we are saying "turn the response into plain text, and then pass it into the
+        callback function as 'resText'". You'll notice we did not save the response.text() promise
+        into a variable like we did with the fetch promise. You can do it either way, but it is
+        common to see .then() simply appended onto the end of the asynchronous call that returns the
+        promise.
+      */
+      response.text().then((resText) => {
+        //Within this .then() handler, we now have resText as a variable and know we have a response.
+
+        //Let's grab the Content-Type header from the response. Content-Type defines what type of data
+        //the server sent back to us. It may not match the Accept header we sent to the server.
+        const contentType = response.headers.get('Content-Type');
+
+        //Grab the content section from the HTML so we can put things on the screen.
+        const content = document.querySelector('#content');
+        //Add a horizontal rule.
+        content.appendChild(document.createElement('hr'));
+
+        //Create some dom elements to display later
+        const h1 = document.createElement('h1');
+        const p = document.createElement('p');
+        const h6 = document.createElement('h6');
+        const rawData = document.createElement('p');
+
+        //Add the content type and raw response text to elements
+        // change this a bit
+        h6.textContent = contentType;
+        rawData.textContent = resText;
+
+        //If the server sent back json
+        if(contentType === 'application/json') {//
+          //Parse the json back into a javascript object, and display the data.
+          const parsedResponse = JSON.parse(resText);
+                    //if(parsedResponse.id == true){
+            h1.textContent = `${parsedResponse.id}`;
+          //}
+          p.textContent = `${parsedResponse.message}`;
+
+          
+        } else if (contentType === 'text/xml') { //If the server sent back xml
+          //Parse the xml into a document and select the data out.
+          const parsedResponse = new window.DOMParser().parseFromString(resText, 'text/xml');
+          h1.textContent = '' + parsedResponse.querySelector('id').textContent ;
+          p.textContent =  '' + parsedResponse.querySelector('message').textContent ;
+          
+        }
+        //how do we clear content?
+        //got it. 
+        content.innerHTML = '';
+
+        //Add the elements to the screen.
+        content.appendChild(h6);// re oredered
+        content.appendChild(h1);
+        content.appendChild(p);
+       
+        //content.appendChild(rawData);       // i think this was adding extra stuff 
+      });
+    };
+
+
+    /*Our fetchRequest sending function. Read init first.
+
+    This is a helper function that allows us to easily send HTTP requests using the Fetch API
+    without having to rewrite all the code every time we want to make a request. It accepts a
+    URL that we want to make a request to, as well as an acceptedType which we will use to tell
+    the server what kind of data we want back.
+    */
+    const sendFetchRequest = (url, acceptedType) => {
+      /*First, we need to configure some options for the request that we want to send.
+        The "method" for an HTTP request defines the kind of request we want to make.
+        In this case, we are making a GET request which gets data from the server.
+        https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+
+        We also define our headers object. Headers are just a collection of metadata that gets sent
+        with our request. In this case we are setting the 'Accept' header, which basically tells the
+        server what kind of data we want to get back. We are setting it equal to whatever gets passed in
+        as the 'acceptedType' (which we set below in our sendJSON and sendXML arrow functions).
+      */
+      const options = {
+        method: 'GET',
+        headers: {'Accept': acceptedType},
+      }
+
+      /*Once we set up our request options, we can use the fetch api to make a request to our server. We
+        ask it to make a 'GET' request (defined in our options object) to the 'url' endpoint (which we
+        passed in from our sendJSON and sendXML arrow functions below). We also ask it to send back the
+        correct content type using the Accept header.
+
+        fetch is an asynchronous call. This means that once the browser calls the following line of code,
+        we have no idea how long it will actually take to run. That is because it is making a request to
+        our server (a totally different program, usually running on a different machine), and factors like
+        internet lag, server load, etc. could impact how quickly a response comes back.
+
+        Because of this, we cannot just call our handler function on the next line. Instead, calling the fetch
+        function immediately returns a "promise". A promise is a structure in JavaScript (and a number of other
+        languages) used to manage and track the completion (or failure) of asynchronous code.
+
+        https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise
+      */
+      const fetchPromise = fetch(url, options);
+
+      /*Once the above line of code has run, the process of sending a request to the server has begun. Note
+      that I say "begun" because we do not know when it will actually finish. All we have is our promise object,
+      which we can use to keep an eye on the asynchronous code our computer is now running.
+
+      Promises have a lot of features and functions (check out the link above), but the one we will worry about
+      for now is the .then() function. .then() is a way of setting up an event handler within our promise. This
+      is very similar to the .addEventListeners we used on our buttons in init below. the .then() event is fired
+      by the promise when our asynchronous code successfully completes. In this scenario, we would say the promise
+      has been "fulfilled".
+
+      In the case of our fetch promise, .then() will be called when we get a response from the server that we
+      made a request to. Once we get a response from the server, we will call the callback function defined in
+      our .then() handler below. In this case, it takes the response and calls the handleResponse function().
+      */
+      fetchPromise.then((response) => { handleResponse(response) });
+    };
+
+
+
+    /*Our init function is the starting point for our client side code. You can see just below the function that
+      window.onload is set equal to init. This means that when the window loads, the init function is called.
+    */
+    const init = () => {
+      //First we grab references to the two buttons in our HTML below.
+      const sendButton = document.querySelector("#send");
+      //const xmlButton = document.querySelector("#getCatsXML");
+
+      /*Next, we want to be able to run code when these buttons are pressed. To do this, we can use the
+        .addEventListener function to add a 'click' event. We want this click event to call the sendFetchRequest
+        function up above. However, when passing a "callback" function (a function that gets called by another
+        function) into the addEventListener function, we can't pass in parameters.
+
+        To get around this limitation, we can simply define new functions that take no parameters, that in turn
+        call our function with the correct parameters. sendJSON and sendXML are two examples of this. When the
+        sendJSON function is called, all it does is call sendFetchRequest with a url of '/cats' and an acceptedType
+        of 'application/json'. sendXML does the same, but with an accepted type of 'text/xml'. 
+        
+        '/cats' is the url we want to make a request to. If I wanted to make a request to www.google.com/teapot, I
+        would pass in 'www.google.com/teapot'. If I don't define an entire domain (something like www.google.com),
+        what I am instead saying is "make a request to /cats at the same domain that my browser got this web page from".
+
+        'application/json' and 'text/xml' are what are known as MIMEtypes. MIMEtypes are standardized strings for
+        referring to various data formats.
+      */
+      //const sendJSON = () => sendFetchRequest('/cats', 'application/json');
+      //const sendXML = () => sendFetchRequest('/cats', 'text/xml');
+
+      //needed to look all this up. 
+      sendButton.addEventListener('click' , () =>{
+
+      const page = document.querySelector('#page').value;  // < forgot you could do that
+      const type = document.querySelector('#type').value; 
+      sendFetchRequest(page,type);
+    }); 
+ ///
+
+
+      //Now that we have our functions defined above, we can have our click events call them. When someone clicks
+      //the button, the callback function will be called.
+      //jsonButton.addEventListener('click', sendJSON);
+      //xmlButton.addEventListener('click', sendXML);
+
+ 
+
+    };
+
+    window.onload = init;
 
   </script>
 </head>
