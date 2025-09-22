@@ -18,7 +18,7 @@
 const respond = (request, response, content, type, statusCode) => {
   // set status code (200 success) and content type
 // response.writeHead(200, {
-let huh = request + ' ';
+
   response.writeHead(statusCode, {
     'Content-Type': type,
     'Content-Length': Buffer.byteLength(content, 'utf8'),
@@ -27,6 +27,10 @@ let huh = request + ' ';
   response.write(content);
   // send the response to the client
   response.end();
+
+  if (response == "farmine"){
+    return (request);
+  }
 };
 
 //____________________
