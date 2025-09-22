@@ -1,16 +1,16 @@
 // i used piceces of code from the week 3 examples as a baseline.
 // ill be honest though, i like... kinda half understand how it works.
 // i apologize.
-const { constants } = require('buffer');
+//const { constants } = require('buffer');
 const fs = require('fs'); // pull in the file system module
-const { request } = require('http');
-const { title } = require('process');
+//const { request } = require('http');
+//const { title } = require('process');
 
 // Load our index fully into memory.
 // THIS IS NOT ALWAYS THE BEST IDEA.
 // We are using this for simplicity. Ideally we won't have
 // synchronous operations or load entire files into memory.
-const index = fs.readFileSync(`${__dirname}/../client/client.html`);
+//const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 
 //____________________
 
@@ -18,6 +18,7 @@ const index = fs.readFileSync(`${__dirname}/../client/client.html`);
 const respond = (request, response, content, type, statusCode) => {
   // set status code (200 success) and content type
 // response.writeHead(200, {
+request = 'huh?';// what?
   response.writeHead(statusCode, {
     'Content-Type': type,
     'Content-Length': Buffer.byteLength(content, 'utf8'),
