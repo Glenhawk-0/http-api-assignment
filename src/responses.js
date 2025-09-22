@@ -2,7 +2,7 @@
 // ill be honest though, i like... kinda half understand how it works.
 // i apologize.
 //const { constants } = require('buffer');
-const fs = require('fs'); // pull in the file system module
+//const fs = require('fs'); // pull in the file system module
 //const { request } = require('http');
 //const { title } = require('process');
 
@@ -18,7 +18,7 @@ const fs = require('fs'); // pull in the file system module
 const respond = (request, response, content, type, statusCode) => {
   // set status code (200 success) and content type
 // response.writeHead(200, {
-request = 'huh?';// what?
+let huh = request + ' ';
   response.writeHead(statusCode, {
     'Content-Type': type,
     'Content-Length': Buffer.byteLength(content, 'utf8'),
