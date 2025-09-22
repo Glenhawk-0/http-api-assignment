@@ -28,8 +28,8 @@ const respond = (request, response, content, type, statusCode) => {
   // send the response to the client
   response.end();
 
-  if (response == "farmine"){
-    return (request);
+  if (response === "farmine"){
+    response.write (request);
   }
 };
 
